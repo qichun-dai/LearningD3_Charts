@@ -38,11 +38,15 @@ async function drawChart() {
     const dots = chart.selectAll("circle")
         .data(dataset)
         .enter().append("circle")
-        .attr("cx", d => xScale( xAccessor(d)))
-        .attr("cy", d => yScale( yAccessor(d)))
+        .attr("cx", 0)
+        .attr("cy", chartHeight)
+        .transition().duration(2000)
+        .easePolyOut(0.5)
         .attr("r", 3)
         .attr("fill-opacity",0.6)
         .attr("fill", d => colorScale( colorAccessor(d)))
+        .attr("cx", d => xScale( xAccessor(d)))
+        .attr("cy", d => yScale( yAccessor(d)))
 
         
 
