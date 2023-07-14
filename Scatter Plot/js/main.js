@@ -16,6 +16,7 @@ async function drawChart() {
     console.log(chartWidth)
 
     const svg = d3.select("#chart-area")
+    .append("svg")
     .attr("height", svgHeight)
     .attr("width", svgWidth)
 
@@ -35,20 +36,53 @@ async function drawChart() {
             .domain(d3.extent(dataset, colorAccessor))
             .range(d3.schemeCategory10)
 
+    const tooltip = d3.select("#tooltip")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "1px")
+        .style("border-radius", "5px")
+        .style("padding", "10px")
+
     const dots = chart.selectAll("circle")
         .data(dataset)
         .enter().append("circle")
         .attr("cx", 0)
         .attr("cy", chartHeight)
-        .transition().duration(2000)
-        .easePolyOut(0.5)
+        
+    dots.transition().duration(2000)
+        .ease(d3.easePolyOut.exponent(2))
         .attr("r", 3)
         .attr("fill-opacity",0.6)
         .attr("fill", d => colorScale( colorAccessor(d)))
         .attr("cx", d => xScale( xAccessor(d)))
         .attr("cy", d => yScale( yAccessor(d)))
-
         
+    dots.on('mouseover', (event,d) => mouseOver(event,d))
+        .on('mouseout', (event,d) => mouseOut(event,d))
+        .on('mousemove', (event,d) => mouseMove(event,d))
+
+    function mouseOver(event,d){
+        tooltip
+        .style("opacity", 1)
+    }
+
+    function mouseMove(event,d) { 
+        tooltip
+        .html("Petal Length: " + yAccessor(d)+
+        "<br>" + "Petal Width: " + xAccessor(d))
+        .style("left", xScale(xAccessor(d)) + margin.left +window.innerWidth * 0.2 + "px")
+        .style("top",  yScale(yAccessor(d)) + margin.top+ "px")
+        
+    }
+
+    function mouseOut(event,d) { 
+        tooltip
+        .transition()
+        .duration(200)
+        .style("opacity", 0)
+    }
 
     const xAxis = chart.append("g")
                     .attr("transform", `translate(0,${svgHeight-margin.bottom})`)
@@ -70,9 +104,7 @@ async function drawChart() {
                         .attr("fill", "#666")
                         .attr("text-anchor", "middle")
                         .text("Petal Length"))
-
-    
-    
+   
 } 
 
 drawChart()

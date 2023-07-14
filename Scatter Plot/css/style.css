@@ -12,3 +12,13 @@ svg {
     display: block;
 }
 
+.tooltip {
+    position: absolute;
+	text-align: center;
+	z-index: 10;
+}
+
+.chart-area {
+    position: relative;
+}
+
