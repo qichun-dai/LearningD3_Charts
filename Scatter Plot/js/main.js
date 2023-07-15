@@ -72,7 +72,7 @@ async function drawChart() {
         tooltip
         .html("Petal Length: " + yAccessor(d)+
         "<br>" + "Petal Width: " + xAccessor(d))
-        .style("left", xScale(xAccessor(d)) + margin.left +window.innerWidth * 0.2 + "px")
+        .style("left", xScale(xAccessor(d)) + margin.left + window.innerWidth * 0.2 + "px")
         .style("top",  yScale(yAccessor(d)) + margin.top+ "px")
         
     }
