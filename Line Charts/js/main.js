@@ -47,6 +47,56 @@ async function drawChart() {
         .attr("fill","none")
         .attr("stroke","gray")
         .attr("stroke-width",1.5)
+        
+
+    chart.append('rect')
+    .attr('width', chartWidth)
+    .attr('height', chartHeight)
+    .style('opacity', 0)
+    .on('touchmouse mousemove', function(event){
+      const mousePos = d3.pointer(event, this)
+      
+      // x coordinate stored in mousePos index 0
+      const date = xScale.invert(mousePos[0])
+      const index = d3.bisect(dataset, date)
+
+      const dateBisector = d3.bisector(xAccessor).left
+      const bisectionIndex = dateBisector(dataset, date)
+      const hoveredIndexData = dataset[bisectionIndex - 1]
+
+      console.log(hoveredIndexData)
+      tooltipDot.style('opacity', 1)
+        .attr('cx', xScale(xAccessor(hoveredIndexData)))
+        .attr('cy', yScale(yAccessor(hoveredIndexData)))
+
+        tooltip
+        .style("display", "block")
+        .style("top", `${yScale(yAccessor(hoveredIndexData)) - 60}px`)
+        .style("left", `${xScale(xAccessor(hoveredIndexData))+ window.innerWidth * 0.2}px`);
+
+        tooltip.select(".unemployment").text(`${yAccessor(hoveredIndexData)}%`);
+
+        const dateFormatter = d3.timeFormat("%B %-d, %Y");
+
+        tooltip.select(".date").text(`${dateFormatter(xAccessor(hoveredIndexData))}`)
+    })
+    .on("mouseleave", function () {
+      tooltipDot.style("opacity", 0);
+      tooltip.style("display", "none");
+    });
+    
+    
+    const tooltip = d3.select("#tooltip")
+
+    const tooltipDot = chart
+        .append("circle")
+        .attr("r", 5)
+        .attr("fill", "#fc8781")
+        .attr("stroke", "black")
+        .attr("stroke-width", 2)
+        .style("opacity", 0)
+        .style('pointer-events', 'none')
+    
 
     const xAxis = chart.append("g")
         .attr("class", "x-axis")

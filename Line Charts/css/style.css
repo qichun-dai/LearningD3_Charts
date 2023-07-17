@@ -20,3 +20,17 @@ svg {
 	stroke: #666;
 }
 
+#tooltip {
+	border: 1px solid #ccc;
+	position: absolute;
+	padding: 10px;
+	background-color: #fff;
+	display: none;
+	pointer-events: none;
+  }
+
+
+  .date, .unemployment{
+	text-align: center;
+  }
+
