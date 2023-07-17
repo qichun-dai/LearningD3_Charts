@@ -36,17 +36,23 @@ async function drawChart() {
         .domain(d3.extent(dataset, yAccessor))
         .range([chartHeight, 0])
 
+    const startLineGenerator = d3.line()
+        .x(d => xScale(xAccessor(d)))
+        .y(chartHeight)
     
-    const lineGenerator = d3.line()
-        .x(d => xScale(xAccessor(d))) 
-        .y(d => yScale(yAccessor(d)))
+        
+    const endLineGenerator = d3.line()
+    .x(d => xScale(xAccessor(d)))
+    .y(d => yScale(yAccessor(d)))
 
     const line = chart.append("path")
         .attr("class","line")
-        .attr("d", lineGenerator(dataset))
+        .attr("d", startLineGenerator(dataset))
         .attr("fill","none")
         .attr("stroke","gray")
         .attr("stroke-width",1.5)
+        .transition().duration(1000)
+        .attr("d", endLineGenerator(dataset))
         
 
     chart.append('rect')
