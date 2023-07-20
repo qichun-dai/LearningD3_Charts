@@ -21,3 +21,28 @@ svg {
 	stroke: #666;
 }
 
+.bar{
+	fill:#FFC917;
+}
+
+.y-axis text {
+    fill: #003082;
+    font-size: 12px;
+}
+
+.y-axis path,
+.y-axis line {
+    opacity: 0;
+}
+
+.current-date{
+font-size: 24px;
+  fill: #d3d3d3;
+  text-anchor: end;
+}
+
+.bar-label {
+    font-size: 11px;
+    fill: #003082; 
+}
+
