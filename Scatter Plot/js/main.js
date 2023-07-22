@@ -50,6 +50,8 @@ async function drawChart() {
         .enter().append("circle")
         .attr("cx", 0)
         .attr("cy", chartHeight)
+
+    
         
     dots.transition().duration(2000)
         .ease(d3.easePolyOut.exponent(2))
@@ -58,30 +60,56 @@ async function drawChart() {
         .attr("fill", d => colorScale( colorAccessor(d)))
         .attr("cx", d => xScale( xAccessor(d)))
         .attr("cy", d => yScale( yAccessor(d)))
+
+    const delaunay = d3.Delaunay.from(
+        dataset,
+        d => xScale(xAccessor(d)),
+        d => yScale(yAccessor(d))
+        )
         
-    dots.on('mouseover', (event,d) => mouseOver(event,d))
-        .on('mouseout', (event,d) => mouseOut(event,d))
-        .on('mousemove', (event,d) => mouseMove(event,d))
+    const voronoi = delaunay.voronoi()
+    voronoi.xmax = chartWidth
+    voronoi.ymax = chartHeight
+
+    chart.selectAll(".voronoi")
+    .data(dataset)
+    .join("path")
+    .attr("class", "voronoi")
+    .attr("d", (d,i) => voronoi.renderCell(i))
+    .attr("stroke", "salmon")
+        
+    chart.selectAll(".voronoi")
+        .on('mouseover', mouseOver)
+        //.on("mousemove",mouseMove)
+        .on('mouseout',  mouseOut)
+        
 
     function mouseOver(event,d){
+        chart.selectAll("circle")
+        .filter(datum => datum == d)
+        .style("stroke", "black")
+        .style("stroke-width",1)
+
         tooltip
         .style("opacity", 1)
-    }
 
-    function mouseMove(event,d) { 
         tooltip
         .html("Petal Length: " + yAccessor(d)+
         "<br>" + "Petal Width: " + xAccessor(d))
         .style("left", xScale(xAccessor(d)) + margin.left + window.innerWidth * 0.2 + "px")
         .style("top",  yScale(yAccessor(d)) + margin.top+ "px")
-        
     }
+
 
     function mouseOut(event,d) { 
         tooltip
-        .transition()
-        .duration(200)
+        // .transition()
+        // .duration(200)
         .style("opacity", 0)
+        
+        chart.selectAll("circle")
+        .filter(datum => datum == d)
+        .style("stroke","none")
     }
 
     const xAxis = chart.append("g")

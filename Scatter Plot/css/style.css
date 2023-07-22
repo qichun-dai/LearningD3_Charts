@@ -22,3 +22,7 @@ svg {
     position: relative;
 }
 
+.voronoi {
+	fill: transparent;
+}
+
