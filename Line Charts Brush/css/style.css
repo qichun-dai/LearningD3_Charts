@@ -34,3 +34,12 @@ svg {
 	text-align: center;
   }
 
+  .custom-handle {
+    cursor: pointer;
+    /* display: none; */
+}
+
+.custom-handle.active {
+    display: inline;
+}
+

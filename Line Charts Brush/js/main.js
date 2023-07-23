@@ -21,7 +21,7 @@ async function drawChart() {
         left: 45, 
         right: 50, 
         top: 490, 
-        bottom: 60
+        bottom: 50
       }
     const svgWidth = 900
     const svgHeight = 600
@@ -159,22 +159,59 @@ async function drawChart() {
 
     const brush = d3.brushX()
     .handleSize(10)
-     .extent([[0,0],[chartWidth,chartHeight]])
-    .on("brush", brushed)
+     .extent([[0,0],[chartWidth,chartHeight2+4]])
+    .on("brush end", brushed)
+
+    
+
+    const handle = context.selectAll(".custom-handle")
+    .data([{ type: "w" }, { type: "e" }])
+    .enter().append("path")
+    .attr("class", "custom-handle")
+    .attr("fill", "#666")
+    .attr("fill-opacity", 0.8)
+    .attr("stroke", "#000")
+    .attr("stroke-width", 1.5)
+    .attr("cursor", "ew-resize")
+    .attr("d", d3.arc()
+        .innerRadius(0)
+        .outerRadius(chartHeight2 / 2)
+        .startAngle(d => { return d.type === "w" ? Math.PI : 0; })
+        .endAngle(d => { return d.type === "w" ?  2 * Math.PI: Math.PI; }))
+    .attr("display", "none")
+    //set this in css not working, why?
     
     context.append("g")
     .attr("class", "brush")
     .call(brush)
 
+    
     function brushed(event) {
-        xScale.domain(event.selection.map(xScale2.invert))
-      
-        focus.select(".x-axis")
-        .call(d3.axisBottom().scale(xScale))
+        let s0, s1;
     
-        line.attr("d", endLineGenerator(dataset))
+        if (event.selection === null) {
+            xScale.domain(d3.extent(dataset, xAccessor))
+            focus.select(".x-axis")
+                .call(d3.axisBottom().scale(xScale))
+            line.attr("d", endLineGenerator(dataset))
+        } else {
+            [s0, s1] = event.selection;
     
-      }
+            xScale.domain([s0, s1].map(xScale2.invert));
+    
+            focus.select(".x-axis")
+                .call(d3.axisBottom().scale(xScale));
+    
+            line.attr("d", endLineGenerator(dataset));
+        }
+    
+        // Only set handle positions if they're defined (i.e., if a selection exists)
+        if (typeof s0 !== "undefined" && typeof s1 !== "undefined") {
+            handle.attr("display", null)
+                .attr("transform", (d, i) => `translate(${i === 0 ? s0 : s1},${chartHeight2 / 2 + 2.5})`)
+                //+2.5 because I added 5 to the x-axis as well
+        }
+    }
    
 } 
 
