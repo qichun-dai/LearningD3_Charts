@@ -160,9 +160,9 @@ async function drawChart() {
     const brush = d3.brushX()
     .handleSize(10)
      .extent([[0,0],[chartWidth,chartHeight2+4]])
-    .on("brush end", brushed)
+    .on("start brush end", brushed)
 
-    
+
 
     const handle = context.selectAll(".custom-handle")
     .data([{ type: "w" }, { type: "e" }])
