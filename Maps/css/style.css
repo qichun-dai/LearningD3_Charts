@@ -11,3 +11,16 @@ svg {
     margin-right: auto;
     display: block;
 }
+
+.chart-area {
+    position: relative;
+}
+
+#tooltip {
+    position: absolute;
+    display: none;
+    pointer-events: none;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 5px;
+}
