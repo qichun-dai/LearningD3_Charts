@@ -53,7 +53,7 @@ section .star.star1{
 }
 
 section #chart-area{
-	background-color: transparent;
+	background-color: transparent !important;
 }
 
 @keyframes animate{
