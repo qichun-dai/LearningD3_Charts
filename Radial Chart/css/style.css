@@ -1,0 +1,23 @@
+
+h1{
+	font-family: Sans-Serif;
+	font-size:36px;
+	text-align: center;
+	color: #003082;
+	
+}
+
+svg {
+	margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.chart-area {
+    position: relative;
+}
+
+.x-axis, .y-axis{
+	stroke: #666;
+}
+
