@@ -26,8 +26,9 @@ photo_data <- lapply(dirs_2019, function(dir_path) {
 })
 
 # Combine all data frames into one
-photo_data_combined <- bind_rows(photo_data) %>% 
-  filter(startsWith(format(CreatedTime, "%Y-%m-%d %H:%M:%S"), "2019"))
+photo_data_combined <- bind_rows(photo_data)
+
+photo_2019 <- photo_data_combined %>% filter(startsWith(format(LastModified, "%Y-%m-%d %H:%M:%S"), "2019"))
 
 if (requireNamespace("rstudioapi", quietly = TRUE)) {
   script_path <- rstudioapi::getSourceEditorContext()$path
@@ -36,6 +37,8 @@ if (requireNamespace("rstudioapi", quietly = TRUE)) {
   setwd(dir_only)
 }
 
-write.csv(photo_data_combined, file = "./photos2019.csv", row.names = FALSE)
+write.csv(photo_data_combined, file = "./photos_all.csv", row.names = FALSE)
+
+write.csv(photo_2019, file = "./photos_2019.csv", row.names = FALSE)
 
 
