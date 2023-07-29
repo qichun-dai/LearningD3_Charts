@@ -27,7 +27,7 @@ async function drawForce() {
       .nodeColor('colorHex')
       .nodeLabel(node => node.first_name + ' ' + node.last_name)
       .graphData(graph)
-      .backgroundColor("#1A120B")
+      .backgroundColor("rgba(0,0,0,0)")
   
 }
     

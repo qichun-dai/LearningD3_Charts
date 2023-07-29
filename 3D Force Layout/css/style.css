@@ -52,9 +52,6 @@ section .star.star1{
 	background: url(../img/star1.png);
 }
 
-section #chart-area{
-	background-color: transparent !important;
-}
 
 @keyframes animate{
 	0%,20%,40%,60%,80%,100%{
