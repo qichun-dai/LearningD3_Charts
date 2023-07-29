@@ -28,7 +28,23 @@ photo_data <- lapply(dirs_2019, function(dir_path) {
 # Combine all data frames into one
 photo_data_combined <- bind_rows(photo_data)
 
-photo_2019 <- photo_data_combined %>% filter(startsWith(format(LastModified, "%Y-%m-%d %H:%M:%S"), "2019"))
+photo_2019 <- photo_data_combined %>% 
+  filter(startsWith(format(LastModified, "%Y-%m-%d %H:%M:%S"), "2019")) %>% 
+  mutate(date = format(LastModified, "%Y-%m-%d"))
+
+# Create a sequence of dates from the start to the end of 2019
+dates_2019 <- seq(from = as.Date("2019-01-01"), 
+                  to = as.Date("2019-12-31"), 
+                  by = "day") 
+
+# Convert the vector of dates to a dataframe
+df_2019 <- data.frame(dates = dates_2019) %>% 
+  mutate(date = format(dates, "%Y-%m-%d"))
+
+df_2019 <- df_2019%>% 
+  left_join(photo_2019, by = c("date"="date")) %>% 
+  group_by(date) %>% 
+  summarize(numbers = n())
 
 if (requireNamespace("rstudioapi", quietly = TRUE)) {
   script_path <- rstudioapi::getSourceEditorContext()$path
@@ -40,5 +56,7 @@ if (requireNamespace("rstudioapi", quietly = TRUE)) {
 write.csv(photo_data_combined, file = "./photos_all.csv", row.names = FALSE)
 
 write.csv(photo_2019, file = "./photos_2019.csv", row.names = FALSE)
+
+write.csv(df_2019, file = "./df_2019.csv", row.names = FALSE)
 
 
