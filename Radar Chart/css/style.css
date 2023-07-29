@@ -1,11 +1,12 @@
 
 h1{
-	font-family: Sans-Serif;
+	font-family: 'Dancing Script', cursive;
 	font-size:36px;
 	text-align: center;
 	color: #003082;
 	
 }
+
 
 body {
     display: flex;
@@ -45,8 +46,8 @@ body {
     letter-spacing: 0.005em;
 }
 
-.tick-label-temperature{
-    fill: #dadadd;
+.tick-label-hour{
+    fill: #666;
     /* opacity: 0.7; */
     font-size: 0.7em;
     dominant-baseline: middle;
