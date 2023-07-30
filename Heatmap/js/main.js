@@ -45,9 +45,9 @@ async function drawChart() {
     .attr("width", cellSize)
     .attr("height", cellSize)
     .attr("fill", d => metricAccessor(d)>=0 ? colorScale(metricAccessor(d)) : "#cccccc")
-    .attr("stroke", "#666")  
-    .attr("stroke-width", 0.5)  
-    .attr("stroke-opacity", 0.15)
+    // .attr("stroke", "#666")  
+    // .attr("stroke-width", 0.5)  
+    // .attr("stroke-opacity", 0.15)
 
     
 
