@@ -21,7 +21,7 @@ async function drawPie() {
 
   // 2. Create chart dimensions
 
-  const width = 550
+  const width = 900
   let dimensions = {
     width: width,
     height: width,
@@ -51,7 +51,7 @@ async function drawPie() {
 
 
 const radius = Math.min(dimensions.boundedWidth, dimensions.boundedHeight) / 2 -10
-const donutWidth = 60
+const donutWidth = 110
 
 const color = d3.scaleOrdinal(d3.schemeCategory10)
 
@@ -67,7 +67,7 @@ const arc = d3.arc()
 const weatherConditions = {
   "clear-day": '#FFF56C',  
   "cloudy": '#D8D9DA',   
-  "partly-cloudy-day": '#937DC2', 
+  "partly-cloudy-day": '#ADA2FF', 
   "rain": '#CEE6F3',      
   "snow": '#FBA1B7',      
   "fog": '#D7BBF5'       
