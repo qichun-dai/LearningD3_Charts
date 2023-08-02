@@ -1,118 +1,141 @@
-async function drawChart() {
-    // read data
-    const dataset = await d3.csv("./data/amsterdam 2022.csv")
+async function drawTable() {
+    // load data
+    const dateParser = d3.timeParse("%Y-%m-%d")
+    const dateAccessor = d => dateParser(d.datetime)
+    let dataset = await d3.csv("./data/amsterdam 2022.csv")
+    dataset = dataset.sort((a,b) => dateAccessor(a) - dateAccessor(b))
+
     console.log(dataset)
+  
+    const table = d3.select("#chart-area")
+  
+    const dateFormat = d => d3.timeFormat("%m-%d")(dateParser(d))
 
-    const parseDate = d3.timeParse("%Y-%m-%d")
-    const dateAccessor = d => parseDate(d.datetime)
-
-    const monthFormat = d3.timeFormat("%m")
-    const yAccessor = d => +monthFormat(dateAccessor(d)) - 1 // -1 since months are 0-based
-
-    const dayOfMonthFormat = d3.timeFormat("%d");
-    const xAccessor = d => +dayOfMonthFormat(dateAccessor(d)) - 1 // -1 since days start from 1
-
-    const metricAccessor = d => +d.precip
-
-    // Dimensions
-    const margin = { left: 50, right: 50, top: 100, bottom: 50 }
-    const svgWidth = 900
-    const svgHeight = 600
-    const chartWidth = svgWidth - margin.left - margin.right
-    const chartHeight = svgHeight - margin.top - margin.bottom
-    cellSize = chartWidth/31
-
-
-    const svg = d3.select("#chart-area")
-    .append("svg")
-    .attr("height", svgHeight)
-    .attr("width", svgWidth)
-
-    const chart = svg.append("g")
-      .style("transform", 
-      `translate(${margin.left}px, ${margin.top}px)`)
-
-
-    const colorScale = d3.scaleSequential(d3.interpolateBlues)
-        .domain([0, d3.max(dataset, d => metricAccessor(d))]); 
-
-    chart.selectAll("rect")
-    .data(dataset)
-    .enter()
-    .append("rect")
-    .attr("x", d => xAccessor(d) * cellSize)
-    .attr("y", d => yAccessor(d) * cellSize)  
-    .attr("width", cellSize)
-    .attr("height", cellSize)
-    .attr("fill", d => metricAccessor(d)>=0 ? colorScale(metricAccessor(d)) : "#cccccc")
-    // .attr("stroke", "#666")  
-    // .attr("stroke-width", 0.5)  
-    // .attr("stroke-opacity", 0.15)
-
+    const invalidDates = dataset.filter(d => !dateAccessor(d));
+    console.log('Invalid Dates:', invalidDates);
     
+  
+    const numberOfRows= 60
+    const colorScale = d3.interpolateHcl("#a5c3e8", "#efa8a1")
+    const grayColorScale = d3.interpolateHcl("#fff", "#bdc4ca")
+    const tempScaleMin = d3.scaleLinear()
+      .domain(d3.extent(dataset, d => +d.tempmin))
+      .range([0, 1])
 
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    const tempScaleMax = d3.scaleLinear()
+    .domain(d3.extent(dataset, d => +d.tempmax))
+    .range([0, 1])
+    
+    const windScale = d3.scaleLinear()
+      .domain(d3.extent(dataset.slice(0, numberOfRows), d => +d.windspeed))
+      .range([0, 1])
 
-    // Add month on the left
-    chart.selectAll("text.month-label")
-        .data(monthNames)
+    const tempMinMax = [
+    d3.min(dataset, d => +d.tempmin),
+    d3.max(dataset, d => +d.tempmax)
+    ];
+    const markerScale = d3.scaleLinear()
+    .domain(tempMinMax)
+    .range([0, 90])
+
+    // const markerScale = d3.scaleLinear()
+    //   .domain(d3.extent(dataset, d => +d.tempmax))
+    //   .range([0, 80])
+  
+    console.log((d3.extent(dataset.slice(0, numberOfRows), d => +d.tempmax)))
+    function getIconPath(iconType) {
+        return `./img/${iconType}.svg`;
+    }
+
+    const columns = [
+      {label: "Day", type: "date", format: d => dateFormat(d.datetime)},
+      {label: "Description", type: "text", format: d => d.description},
+      {label: "Min Temp", type: "number", format: d => d3.format(".1f")(d.tempmin), background: d => colorScale(tempScaleMin(+d.tempmin))},
+      {label: "Min & Max Temp Marker", type: "marker", format: d => {
+        const x1 = markerScale(+d.tempmin) + "%";
+        const x2 = markerScale(+d.tempmax) + "%";
+        return `
+            <svg width="100%" height="20">
+                <line x1="${x1}" y1="10" x2="${x2}" y2="10" stroke="#34495e" />
+                <line x1="${x1}" y1="0" x2="${x1}" y2="20" stroke="#34495e" />
+                <line x1="${x2}" y1="0" x2="${x2}" y2="20" stroke="#34495e" />
+            </svg>
+        `;
+      }},
+      {label: "Max Temp", type: "number", format: d => d3.format(".1f")(d.tempmax), background: d => colorScale(tempScaleMax(+d.tempmax))},
+      {label: "Wind Speed", type: "number", format: d => d3.format(".2f")(+d.windspeed), background: d => grayColorScale(windScale(+d.windspeed))},
+      {
+        label: "Weather Icon",
+        type: "centered",
+        format: d => {
+            return `
+                <svg width="30" height="30">
+                    <image href="${getIconPath(d.icon)}" width="30" height="30" />
+                </svg>
+            `;
+        }
+    },
+      {label: "UV Index", type: "symbol", format: d => new Array(+d.uvindex).fill("✸").join("")},
+    ]
+
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    let dataByMonth = {};
+
+    dataset.forEach(d => {
+        let monthName = months[dateAccessor(d).getMonth()];
+        console.log(monthName)
+        if(!dataByMonth[monthName]) {
+            dataByMonth[monthName] = [];
+        }
+        dataByMonth[monthName].push(d);
+    });
+
+    const dropdown = d3.select(".container").insert("select", "#chart-area").attr("id", "monthDropdown");
+
+    dropdown.selectAll("option")
+        .data(months)
         .enter()
-        .append("text")
-        .attr("class", "label")
-        .attr("x", -10)
-        .attr("y", (d, i) => (i +0.5)* cellSize ) // Roughly centering the month name for 31 days
-        .text(d => d)
-        .attr("text-anchor", "end")
-        .attr("alignment-baseline", "middle")
+        .append("option")
+        .attr("value", d => d)
+        .text(d => d);
 
-    // Add day numbers on top
-    for (let i = 1; i <= 31; i++) {
-        chart.append("text")
-            .attr("x", (i - 0.5) * cellSize)
-            .attr("y", -15)
-            .text(i)
-            .attr("class", "label")
-            .attr("text-anchor", "middle")
-            .attr("alignment-baseline", "hanging")
-   
-   
-    } 
+    // Add event listener to update table on dropdown change
+    dropdown.on("change", function() {
+        updateTable(dataByMonth[this.value]);
+    });
 
-    //adding legend
-    const defs = svg.append("defs");
+   // Add table headers and an empty tbody
+    table.append("thead").append("tr")
+    .selectAll("th")
+    .data(columns)
+    .join("th")
+    .text(d => d.label)
+    .attr("class", d => d.type);
 
-    const gradient = defs.append("linearGradient")
-        .attr("id", "precipitation-gradient")
-        .attr("x1", "0%")
-        .attr("y1", "100%")
-        .attr("x2", "100%")
-        .attr("y2", "100%")
+    // Append an empty tbody
+    table.append("tbody");
 
-    gradient.selectAll(".stop")
-        .data(colorScale.ticks().map((t, i, n) => ({ offset: `${100*i/n.length}%`, color: colorScale(t) })))
-        .enter().append("stop")
-        .attr("offset", d => d.offset)
-        .attr("stop-color", d => d.color)
+    // ...
 
-    const legendWidth = 230
-    const legendHeight = 20
-    const marginLegend = 30
+    function updateTable(dataForMonth) {
+    const tbody = d3.select("#chart-area tbody");
+    tbody.selectAll("tr").remove();
 
-    svg.append("rect")
-        .attr("x", svgWidth / 2 - legendWidth / 2)
-        .attr("y", marginLegend)
-        .attr("width", legendWidth)
-        .attr("height", legendHeight)
-        .style("fill", "url(#precipitation-gradient)")
+    // Use the actual data rows for the data bind
+    tbody.selectAll("tr")
+        .data(dataForMonth)
+        .join("tr")
+        .selectAll("td")
+        .data(d => columns.map(column => ({ value: d, column })))
+        .join("td")
+            .html(d => d.column.format(d.value)) 
+            .attr("class", d => d.column.type)
+            .style("background", d => d.column.background && d.column.background(d.value))
+            .style("transform", d => d.column.transform && d.column.transform(d.value));
+    }
 
-    svg.selectAll(".legendText")
-        .data(colorScale.ticks())
-        .enter().append("text")
-        .attr("class", "legendText")
-        .attr("x", d => svgWidth / 2 - legendWidth / 2 + legendWidth * (d / d3.max(colorScale.domain())))
-        .attr("y", marginLegend-10)
-        .style("text-anchor", "middle")
-        .text(d => d)
-}
+    // ...
 
-drawChart()
+    updateTable(dataByMonth["January"]);
+  }
+  drawTable()
