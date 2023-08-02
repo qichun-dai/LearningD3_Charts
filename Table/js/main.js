@@ -78,31 +78,31 @@ async function drawTable() {
       {label: "UV Index", type: "symbol", format: d => new Array(+d.uvindex).fill("✸").join("")},
     ]
 
-    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    let dataByMonth = {};
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    let dataByMonth = {}
 
     dataset.forEach(d => {
-        let monthName = months[dateAccessor(d).getMonth()];
+        let monthName = months[dateAccessor(d).getMonth()]
         console.log(monthName)
         if(!dataByMonth[monthName]) {
-            dataByMonth[monthName] = [];
+            dataByMonth[monthName] = []
         }
-        dataByMonth[monthName].push(d);
+        dataByMonth[monthName].push(d)
     });
 
-    const dropdown = d3.select(".container").insert("select", "#chart-area").attr("id", "monthDropdown");
+    const dropdown = d3.select(".container").insert("select", "#chart-area").attr("id", "monthDropdown")
 
     dropdown.selectAll("option")
         .data(months)
         .enter()
         .append("option")
         .attr("value", d => d)
-        .text(d => d);
+        .text(d => d)
 
     // Add event listener to update table on dropdown change
     dropdown.on("change", function() {
-        updateTable(dataByMonth[this.value]);
-    });
+        updateTable(dataByMonth[this.value])
+    })
 
    // Add table headers and an empty tbody
     table.append("thead").append("tr")
@@ -110,12 +110,12 @@ async function drawTable() {
     .data(columns)
     .join("th")
     .text(d => d.label)
-    .attr("class", d => d.type);
+    .attr("class", d => d.type)
 
     // Append an empty tbody
-    table.append("tbody");
+    table.append("tbody")
 
-    // ...
+    // update the table with value selected in the button
 
     function updateTable(dataForMonth) {
     const tbody = d3.select("#chart-area tbody");
@@ -131,11 +131,11 @@ async function drawTable() {
             .html(d => d.column.format(d.value)) 
             .attr("class", d => d.column.type)
             .style("background", d => d.column.background && d.column.background(d.value))
-            .style("transform", d => d.column.transform && d.column.transform(d.value));
+            .style("transform", d => d.column.transform && d.column.transform(d.value))
     }
 
-    // ...
+    // initiate the table with January data
 
-    updateTable(dataByMonth["January"]);
+    updateTable(dataByMonth["January"])
   }
   drawTable()

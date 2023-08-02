@@ -47,9 +47,12 @@ td {
     text-align: right;
     font-feature-settings: 'tnum' 1;
 }
+
 .date {
     text-align: right;
     font-feature-settings: 'tnum' 1;
+    width:50px;
+    min-width: 50px;
 }
 
 tbody .marker {
@@ -70,6 +73,7 @@ tbody .text {
     text-overflow: ellipsis;
     overflow: hidden;
 }
+
 
 #monthDropdown {
     padding: 10px;  
