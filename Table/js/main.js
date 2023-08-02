@@ -69,7 +69,7 @@ async function drawTable() {
         type: "centered",
         format: d => {
             return `
-                <svg width="30" height="30">
+                <svg width="40" height="40">
                     <image href="${getIconPath(d.icon)}" width="30" height="30" />
                 </svg>
             `;
