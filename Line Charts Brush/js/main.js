@@ -30,12 +30,6 @@ async function drawChart() {
     const chartHeight2 = svgHeight - margin2.top - margin2.bottom
 
 
-   
-
-
-
-    
-
     const xScale = d3.scaleTime()
         .domain(d3.extent(dataset, xAccessor))
         .range([0,chartWidth])
