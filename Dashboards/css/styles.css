@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Oleo+Script&family=Roboto&display=swap');
+
+#chart-area, #donut, #heatmap {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5em 2em;
+    letter-spacing: -0.011em;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+}
+
+.title {
+    font-size: 2em;
+    letter-spacing: -0.02em;
+    text-anchor: middle;
+}
+
+.title-small {
+    text-anchor: middle;
+    opacity: 1.5;
+    fill: #666;
+}
+
+
+.legend{
+    fill: #272829;
+}
+
+h1{
+	font-family: Sans-Serif;
+	font-size:24px;
+	text-align: center;
+	
+}
+
+h2{
+	font-family: Sans-Serif;
+	font-size:14px;
+	text-align: center;
+    font-weight: 200;
+    color: #666;
+	
+}
+
+svg {
+	margin: 0 auto;
+    display: block;
+}
+
+.chart-area {
+    position: relative;
+}
+
+
+
+#tooltip {
+	border: 1px solid #ccc;
+	position: absolute;
+	padding: 10px;
+	background-color: #fff;
+	display: none;
+	pointer-events: none;
+  }
+
+
+.label, .legendText{
+	font-family: Sans-Serif;
+	font-size:11px;
+	fill: #666;
+
+}
